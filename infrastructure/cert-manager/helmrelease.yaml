@@ -5,6 +5,7 @@ metadata:
   namespace: cert-manager
 spec:
   interval: 30m
+  timeout: 5m
   chart:
     spec:
       chart: cert-manager
@@ -15,7 +16,7 @@ spec:
         namespace: flux-system
   install:
     crds: Create
+    remediation:
+      retries: 3
   upgrade:
     crds: CreateReplace
-  values:
-    installCRDs: true
