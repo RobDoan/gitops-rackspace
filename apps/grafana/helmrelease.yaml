@@ -20,7 +20,7 @@ spec:
   values:
     persistence:
       enabled: true
-      size: 2Gi
+      size: 5Gi
       storageClassName: ssd
     admin:
       existingSecret: grafana-secrets
