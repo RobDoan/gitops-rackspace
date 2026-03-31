@@ -92,7 +92,8 @@ spec:
                 encryption_key="changeme-replace-with-32-char-key"
 
               vault kv put secret/grafana \
-                admin_password="changeme-replace-before-live"
+                admin_password="changeme-replace-before-live" \
+                admin_user="admin"
 
               vault kv put secret/qdrant \
                 api_key="changeme-replace-before-live"
