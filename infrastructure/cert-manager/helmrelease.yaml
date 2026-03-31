@@ -21,5 +21,7 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
+    crds:
+      enabled: true
     startupapicheck:
       enabled: false
