@@ -5,7 +5,7 @@ metadata:
   namespace: cert-manager
 spec:
   interval: 30m
-  timeout: 5m
+  timeout: 15m
   chart:
     spec:
       chart: cert-manager
@@ -20,3 +20,6 @@ spec:
       retries: 3
   upgrade:
     crds: CreateReplace
+  values:
+    startupapicheck:
+      enabled: false
