@@ -4,6 +4,7 @@ resources:
   - flux-system
   - namespaces.yaml
   - cert-manager.yaml
+  - cert-manager-issuers.yaml
   - ingress-nginx.yaml
   - external-secrets.yaml
   - vault.yaml
