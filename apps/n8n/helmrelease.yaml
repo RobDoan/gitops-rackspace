@@ -1,0 +1,39 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  interval: 30m
+  timeout: 5m
+  chart:
+    spec:
+      chart: n8n
+      version: ">=0.1.0"
+      sourceRef:
+        kind: HelmRepository
+        name: 8gears
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  values:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ssd
+    config:
+      generic:
+        timezone: "UTC"
+      database:
+        type: sqlite
+    extraEnv:
+      - name: N8N_ENCRYPTION_KEY
+        valueFrom:
+          secretKeyRef:
+            name: n8n-secrets
+            key: encryption-key
+      - name: WEBHOOK_URL
+        value: "https://n8n.quybits.com/"
+      - name: N8N_EDITOR_BASE_URL
+        value: "https://n8n.quybits.com/"
