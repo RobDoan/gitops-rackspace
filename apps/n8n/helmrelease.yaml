@@ -28,12 +28,9 @@ spec:
       database:
         type: sqlite
     extraEnv:
-      - name: N8N_ENCRYPTION_KEY
-        valueFrom:
-          secretKeyRef:
-            name: n8n-secrets
-            key: encryption-key
-      - name: WEBHOOK_URL
-        value: "https://n8n.quybits.com/"
-      - name: N8N_EDITOR_BASE_URL
-        value: "https://n8n.quybits.com/"
+      WEBHOOK_URL: "https://n8n.quybits.com/"
+      N8N_EDITOR_BASE_URL: "https://n8n.quybits.com/"
+    extraEnvSecrets:
+      N8N_ENCRYPTION_KEY:
+        name: n8n-secrets
+        key: encryption-key
