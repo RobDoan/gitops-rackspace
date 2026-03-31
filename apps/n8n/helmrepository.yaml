@@ -4,5 +4,6 @@ metadata:
   name: 8gears
   namespace: flux-system
 spec:
+  type: oci
   interval: 1h
-  url: https://8gears.container-registry.com/chartrepo/library
+  url: oci://8gears.container-registry.com/library
