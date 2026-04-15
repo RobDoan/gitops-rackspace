@@ -3,17 +3,13 @@ kind: Ingress
 metadata:
   name: vault
   namespace: vault
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
-        - vault.quybits.com
+        - vault.homelander.local
       secretName: vault-tls
   rules:
-    - host: vault.quybits.com
+    - host: vault.homelander.local
       http:
         paths:
           - path: /

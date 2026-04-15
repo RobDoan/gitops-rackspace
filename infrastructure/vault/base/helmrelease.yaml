@@ -44,7 +44,6 @@ spec:
       dataStorage:
         enabled: true
         size: 10Gi
-        storageClass: ssd
         accessMode: ReadWriteOnce
     ui:
       enabled: true

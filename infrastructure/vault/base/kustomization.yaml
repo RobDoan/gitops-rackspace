@@ -4,4 +4,5 @@ resources:
   - helmrepository.yaml
   - helmrelease.yaml
   - bootstrap-rbac.yaml
+  - bootstrap-job.yaml
   - ingress.yaml
