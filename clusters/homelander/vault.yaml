@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 10m
   retryInterval: 1m
-  path: ./infrastructure/vault/overlays/rackspace
+  path: ./infrastructure/vault/overlays/homelander
   prune: true
   sourceRef:
     kind: GitRepository

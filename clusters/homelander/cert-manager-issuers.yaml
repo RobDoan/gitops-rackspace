@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 10m
   retryInterval: 1m
-  path: ./infrastructure/cert-manager-issuers/overlays/rackspace
+  path: ./infrastructure/cert-manager-issuers/overlays/homelander
   prune: true
   sourceRef:
     kind: GitRepository
