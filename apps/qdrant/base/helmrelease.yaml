@@ -23,7 +23,6 @@ spec:
       accessModes:
         - ReadWriteOnce
       size: 20Gi
-      storageClassName: ssd
     extraEnvVars:
       - name: QDRANT__SERVICE__API_KEY
         valueFrom:

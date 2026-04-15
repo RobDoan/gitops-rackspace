@@ -1,23 +1,20 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: n8n
+  name: cert-manager
   namespace: flux-system
 spec:
   interval: 10m
   retryInterval: 1m
-  path: ./apps/n8n/overlays/rackspace
+  path: ./infrastructure/cert-manager
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
   dependsOn:
-    - name: eso-store
-    - name: qdrant
-    - name: cert-manager-issuers
-    - name: ingress-nginx
+    - name: namespaces
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
       kind: HelmRelease
-      name: n8n
-      namespace: n8n
+      name: cert-manager
+      namespace: cert-manager

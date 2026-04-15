@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: grafana
-  namespace: grafana
+  name: qdrant
+  namespace: qdrant
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -10,16 +10,16 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - grafana.quybits.com
-      secretName: grafana-tls
+        - qdrant.example.com
+      secretName: qdrant-tls
   rules:
-    - host: grafana.quybits.com
+    - host: qdrant.example.com
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: grafana
+                name: qdrant
                 port:
-                  number: 80
+                  number: 6333

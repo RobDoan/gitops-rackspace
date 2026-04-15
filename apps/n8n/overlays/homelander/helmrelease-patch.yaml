@@ -1,0 +1,12 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  values:
+    persistence:
+      storageClass: local-path
+    extraEnv:
+      WEBHOOK_URL: "https://n8n.homelander.local/"
+      N8N_EDITOR_BASE_URL: "https://n8n.homelander.local/"

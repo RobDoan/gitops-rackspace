@@ -3,17 +3,13 @@ kind: Ingress
 metadata:
   name: n8n
   namespace: n8n
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
-        - n8n.quybits.com
+        - n8n.homelander.local
       secretName: n8n-tls
   rules:
-    - host: n8n.quybits.com
+    - host: n8n.homelander.local
       http:
         paths:
           - path: /

@@ -3,17 +3,13 @@ kind: Ingress
 metadata:
   name: qdrant
   namespace: qdrant
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
-        - qdrant.quybits.com
+        - qdrant.homelander.local
       secretName: qdrant-tls
   rules:
-    - host: qdrant.quybits.com
+    - host: qdrant.homelander.local
       http:
         paths:
           - path: /

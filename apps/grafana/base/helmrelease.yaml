@@ -21,11 +21,10 @@ spec:
     persistence:
       enabled: true
       size: 5Gi
-      storageClassName: ssd
     admin:
       existingSecret: grafana-secrets
       userKey: admin-user
       passwordKey: admin-password
     grafana.ini:
       server:
-        root_url: "https://grafana.quybits.com"
+        root_url: "https://grafana.example.com"

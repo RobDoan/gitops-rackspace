@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 10m
   retryInterval: 1m
-  path: ./apps/qdrant
+  path: ./apps/qdrant/overlays/rackspace
   prune: true
   sourceRef:
     kind: GitRepository

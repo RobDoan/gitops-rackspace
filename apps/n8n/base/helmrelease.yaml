@@ -21,15 +21,14 @@ spec:
     persistence:
       enabled: true
       size: 5Gi
-      storageClass: ssd
     config:
       generic:
         timezone: "UTC"
       database:
         type: sqlite
     extraEnv:
-      WEBHOOK_URL: "https://n8n.quybits.com/"
-      N8N_EDITOR_BASE_URL: "https://n8n.quybits.com/"
+      WEBHOOK_URL: "https://n8n.example.com/"
+      N8N_EDITOR_BASE_URL: "https://n8n.example.com/"
     extraEnvSecrets:
       N8N_ENCRYPTION_KEY:
         name: n8n-secrets
