@@ -12,3 +12,6 @@ resources:
   - grafana.yaml
   - qdrant.yaml
   - n8n.yaml
+  - postgres.yaml
+  - minio.yaml
+  - royal-dispatch.yaml
