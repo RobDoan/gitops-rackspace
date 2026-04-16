@@ -182,18 +182,31 @@ K3s ships with **Traefik** as the default ingress controller. My entire stack us
 
 ### The Fix: Disable Traefik
 
-I decided to standardize on ingress-nginx across both clusters. On Jarvis (the K3s server node), I edited the K3s config:
-
-```yaml
-# /etc/rancher/k3s/config.yaml
-disable:
-  - traefik
-```
-
-Then restarted K3s:
+I decided to standardize on ingress-nginx across both clusters. On Jarvis (the K3s server node), I disabled Traefik by editing the K3s systemd service file:
 
 ```bash
+sudo nano /etc/systemd/system/k3s.service
+```
+
+Add `--disable=traefik` to the `ExecStart` line:
+
+```bash
+ExecStart=/usr/local/bin/k3s server \
+  --disable=traefik \
+  # ... other arguments
+```
+
+Then reload systemd and restart K3s:
+
+```bash
+sudo systemctl daemon-reload
 sudo systemctl restart k3s
+```
+
+Verify that the Traefik pod is gone:
+
+```bash
+kubectl get pods -n kube-system
 ```
 
 After that, ingress-nginx deploys via Flux the same way it does on Rackspace. No overlay needed — the ingress-nginx HelmRelease is identical on both clusters.
@@ -441,7 +454,43 @@ The shared components — cert-manager, ingress-nginx, External Secrets Operator
 
 ---
 
-## 8. What's Next
+## 8. Restructuring the Repo? Update Your Paths
+
+One thing that tripped me up: if you restructure the repo — rename directories, move overlays around, change the cluster entrypoint path — **Flux doesn't magically follow along**. The bootstrap path is baked into the Flux Kustomization CRD (`gotk-sync.yaml`), and every app Kustomization has a hardcoded `path` pointing to its overlay directory.
+
+If you change the structure, you have two options:
+
+1. **Re-bootstrap.** Run `flux uninstall`, then re-run `flux bootstrap` with the new `--path`. Cleanest approach.
+
+```bash
+flux bootstrap github \
+  --owner=${GITHUB_USER} \
+  --repository=gitops-rackspace \
+  --branch=main \
+  --path=./clusters/rackspace \
+  --personal --token-auth
+```
+
+2. **Update in-place.** Edit `gotk-sync.yaml` in your repo to reflect the new path, update every Kustomization CRD's `path` field, commit, and push. Then patch the live CRD on the cluster so it picks up the change immediately:
+
+
+```bash
+kubectl edit kustomization flux-system -n flux-system
+# update spec.path to your new directory
+```
+
+```yaml
+#clusters/rackspace/flux-system/gotk-sync.yaml
+
+spec:
+  path: ./clusters/rackspace  # ← this must match your new structure
+```
+
+Either way, don't forget to update the inner `path` fields too — every `.yaml` file in `clusters/<name>/` points to a specific overlay directory. If those paths are stale, Flux will fail to reconcile and you'll see `path not found` errors in `flux get kustomizations`.
+
+---
+
+## 9. What's Next
 
 The repo structure is ready. The overlays are written. The next steps are all about making homelander operational:
 
