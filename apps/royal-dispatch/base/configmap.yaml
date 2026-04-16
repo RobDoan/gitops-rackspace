@@ -9,5 +9,4 @@ data:
   S3_BUCKET: "royal-audio"
   QDRANT_URL: "http://qdrant.qdrant.svc.cluster.local:6333"
   USER_TIMEZONE: "America/Los_Angeles"
-  NEXT_PUBLIC_API_URL: "https://royal-dispatch-api.example.com"
   NEXT_PUBLIC_FRONTEND_URL: "https://royal-dispatch.example.com"

@@ -5,5 +5,4 @@ metadata:
   namespace: royal-dispatch
 data:
   S3_PUBLIC_URL: "https://minio.homelander.local"
-  NEXT_PUBLIC_API_URL: "https://royal-dispatch-api.homelander.local"
   NEXT_PUBLIC_FRONTEND_URL: "https://royal-dispatch.homelander.local"

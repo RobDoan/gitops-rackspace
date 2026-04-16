@@ -1,28 +1,6 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: royal-dispatch-api
-  namespace: royal-dispatch
-spec:
-  tls:
-    - hosts:
-        - royal-dispatch-api.quybits.com
-      secretName: royal-dispatch-api-tls
-  rules:
-    - host: royal-dispatch-api.quybits.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 8000
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
   name: royal-dispatch-frontend
   namespace: royal-dispatch
 spec:
