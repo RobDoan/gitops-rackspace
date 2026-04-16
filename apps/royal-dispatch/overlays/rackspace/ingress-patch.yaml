@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: royal-dispatch-api
+  namespace: royal-dispatch
+spec:
+  tls:
+    - hosts:
+        - royal-dispatch-api.quybits.com
+      secretName: royal-dispatch-api-tls
+  rules:
+    - host: royal-dispatch-api.quybits.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: royal-dispatch-frontend
+  namespace: royal-dispatch
+spec:
+  tls:
+    - hosts:
+        - royal-dispatch.quybits.com
+      secretName: royal-dispatch-frontend-tls
+  rules:
+    - host: royal-dispatch.quybits.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: royal-dispatch-admin
+  namespace: royal-dispatch
+spec:
+  tls:
+    - hosts:
+        - royal-dispatch-admin.quybits.com
+      secretName: royal-dispatch-admin-tls
+  rules:
+    - host: royal-dispatch-admin.quybits.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: admin
+                port:
+                  number: 3001
