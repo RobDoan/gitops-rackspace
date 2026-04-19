@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: n8n
-      version: ">=0.1.0 <1.0.0"
+      version: "2.0.1"
       sourceRef:
         kind: HelmRepository
         name: 8gears
