@@ -393,6 +393,80 @@ kubectl exec -n vault vault-0 -- vault status | grep Sealed
 
 ---
 
+## Flux Useful Commands
+
+### Check Status
+
+```bash
+# Check all Kustomizations
+flux get kustomizations
+
+# Check all HelmReleases across namespaces
+flux get helmrelease -A
+
+# Check a specific HelmRelease
+flux get helmrelease <name> -n <namespace>
+
+# Check Flux source repositories
+flux get sources helm -A
+flux get sources git -A
+```
+
+### Reconcile (Force Sync)
+
+```bash
+# Force Flux to re-sync a HelmRelease immediately
+flux reconcile helmrelease <name> -n <namespace>
+
+# Force Flux to re-sync a Kustomization
+flux reconcile kustomization <name>
+
+# Force Flux to re-pull from the Git source
+flux reconcile source git flux-system
+```
+
+### Suspend / Resume
+
+```bash
+# Pause Flux management of a release (useful for debugging)
+flux suspend helmrelease <name> -n <namespace>
+
+# Resume Flux management
+flux resume helmrelease <name> -n <namespace>
+
+# Suspend + resume to clear stale errors
+flux suspend helmrelease <name> -n <namespace> && flux resume helmrelease <name> -n <namespace>
+```
+
+### Debugging
+
+```bash
+# View Flux logs
+flux logs --level=error
+
+# View logs for a specific controller
+flux logs --kind=HelmRelease --name=<name> --namespace=<namespace>
+
+# Check why a HelmRelease failed
+kubectl describe helmrelease <name> -n <namespace>
+
+# Reset a stuck/failed Helm release (deletes Helm history, Flux will reinstall)
+kubectl delete secret -n <namespace> -l owner=helm,name=<name>
+flux reconcile helmrelease <name> -n <namespace>
+```
+
+### Uninstall
+
+```bash
+# Remove a HelmRelease (Flux will delete the Helm release from the cluster)
+flux delete helmrelease <name> -n <namespace>
+
+# Uninstall Flux entirely from the cluster
+flux uninstall
+```
+
+---
+
 ## Important Files
 
 | File | Description | Security |
