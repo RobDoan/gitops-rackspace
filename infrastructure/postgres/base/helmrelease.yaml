@@ -5,11 +5,11 @@ metadata:
   namespace: postgres
 spec:
   interval: 30m
-  timeout: 5m
+  timeout: 10m
   chart:
     spec:
       chart: postgresql
-      version: ">=15.0.0 <17.0.0"
+      version: "16.7.25"
       sourceRef:
         kind: HelmRepository
         name: bitnami-postgresql
