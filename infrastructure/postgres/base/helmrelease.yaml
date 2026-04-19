@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: postgresql
-      version: "16.7.25"
+      version: "18.3-bookworm"
       sourceRef:
         kind: HelmRepository
         name: bitnami-postgresql
