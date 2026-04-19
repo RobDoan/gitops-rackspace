@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: postgresql
-      version: "18.3-bookworm"
+      version: ">=15.0.0 <17.0.0"
       sourceRef:
         kind: HelmRepository
         name: bitnami-postgresql
@@ -18,6 +18,8 @@ spec:
     remediation:
       retries: 3
   values:
+    image:
+      tag: 18.3-bookworm
     auth:
       username: royal
       database: royal_dispatch
