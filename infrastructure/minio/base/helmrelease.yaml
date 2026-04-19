@@ -9,18 +9,22 @@ spec:
   chart:
     spec:
       chart: minio
-      version: ">=14.0.0 <16.0.0"
+      version: ">=5.0.0 <7.0.0"
       sourceRef:
         kind: HelmRepository
-        name: bitnami-minio
+        name: minio
         namespace: flux-system
   install:
     remediation:
       retries: 3
   values:
-    auth:
-      existingSecret: minio-secrets
-    defaultBuckets: "royal-audio"
+    existingSecret: minio-secrets
+    buckets:
+      - name: royal-audio
+        policy: none
     persistence:
       enabled: true
       size: 20Gi
+    resources:
+      requests:
+        memory: 512Mi
