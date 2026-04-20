@@ -1,47 +1,54 @@
 # From Cloud to Core: Building the "Absolute Beast" Homelab
 
+![Homelab Header](images/homelab-header.svg)
+
 For the past year, my digital life lived on **Rackspace**. It was perfect: for less than $20 a month, I had a reliable 3-node Kubernetes cluster running Grafana, Prometheus, n8n, and Postgres. It was cheap, stable, and it worked.
 
-But as any developer knows, eventually, you hit a wall where "enough" isn't enough anymore. This weekend, I finally pulled the trigger, wiped a brand-new Minisforum UM890 Pro, and began my journey into the world of self-hosted infrastructure.
+But as any developer knows, eventually "enough" isn't enough anymore. This weekend, I finally pulled the trigger, wiped a brand-new Minisforum UM890 Pro, and started building my own infrastructure from scratch.
 
 ---
 
-## 1. Why Leave the Cloud?
-While Rackspace served me well, the allure of a homelab was too strong to resist. Here’s why I made the leap:
+## 1. Why build a homelab?
+Rackspace served me well, but I wanted more. A few reasons:
 
-* **Compute Power vs. Cost:** In the cloud, 32GB of RAM and an 8-core/16-thread CPU (like the Ryzen 9 in my UM890 Pro) would cost hundreds of dollars a month. Locally, it’s a one-time hardware investment.
-* **Investment in Learning:** Running your own hardware forces you to learn about the underlying systems. It’s not just about Kubernetes; it’s about storage, networking, and hardware management. I want to understand it to get some ideas for upcoming projects about infrastructure and DevOps.
-* **AI and GPU Potential:** With the rise of local LLMs and AI workloads, when this project does not serve me well, I can repurpose it as a dedicated AI node. The UM890 Pro's Ryzen 9 CPU is powerful, but the real game-changer will be adding an eGPU via the OCuLink port for AI acceleration.
+Before, picking up anything new meant dedicating serious time digging through docs and forums, or paying good money for someone experienced to teach you. Now, for $25/month, you have a teacher that’s available every day, any hour, and never runs out of patience. With a deal like that, why not just learn it? Do the homework. Break things. Fix them. That’s how you actually understand it, and it’s the only way to know if what AI told you was even right.
+
+On the money side, 32GB of RAM and an 8-core/16-thread CPU in the cloud would cost hundreds of dollars a month. The UM890 Pro was a one-time purchase and I own it forever.
+
+I also just want to understand the underlying systems. Kubernetes is the surface — storage, networking, hardware management are where the real learning happens. I have some infrastructure and DevOps projects coming up, and I want to actually understand this stuff before I build on top of it.
+
+And if the homelab doesn’t work out as a cluster, I can always repurpose it as a dedicated AI node for running local LLMs. The Ryzen 9 is already solid, and the OCuLink port means I can add an eGPU later.
 
 ---
 
-## 2. The Build: Provisioning the Iron
-I chose **Proxmox VE (PVE)** as my base layer. Why? Because I prioritize my weekends. If I break a Kubernetes node while experimenting, I want to restore a snapshot in seconds rather than re-imaging an entire SSD.
+## 2. The build
 
-### Step 1: Installing PVE and Storage Logic
-I encountered my first architectural choice at the storage screen. I went with **LVM-Thin** on my 1TB NVMe.
-* **Why?** While ZFS is powerful, LVM-Thin provides excellent performance for a single-drive setup without the memory overhead of ZFS.
+I went with **Proxmox VE** as my base layer. Why? Because I value my weekends. If I break a Kubernetes node while experimenting, I want to restore a snapshot in seconds, not re-image an entire SSD.
 
-### Step 2: Creating the Trinity (Jarvis, Edith, and Karen)
-I decided to build a 3-node cluster manually to ensure a "clean room" environment for each.
+### Step 1: Storage
+
+First architectural choice: the storage screen. I went with **LVM-Thin** on my 1TB NVMe. ZFS is great if you have multiple drives and ECC RAM, but for a single NVMe setup, LVM-Thin is simpler and doesn't eat your memory.
+
+### Step 2: Three VMs (Jarvis, Edith, and Karen)
+I built a 3-node cluster manually so each node starts clean.
 
 | Node Name | Role | Resources |
 | :--- | :--- | :--- |
-| **Jarvis** | Master (Control Plane) | 4 vCPU, 16GB RAM |
-| **Edith** | Worker 01 | 4 vCPU, 6GB RAM |
-| **Karen** | Worker 02 | 4 vCPU, 6GB RAM |
+| **Jarvis** | Master (Control Plane) | 4 vCPU, 8GB RAM |
+| **Edith** | Worker 01 | 4 vCPU, 10GB RAM |
+| **Karen** | Worker 02 | 4 vCPU, 10GB RAM |
 
-**Problem Encountered: The QEMU Roadblock**
-Initially, Proxmox couldn't see the internal IP addresses of my VMs.
-* **The Fix:** You must install the `qemu-guest-agent` inside the Ubuntu VM.
+> A quick story about validating AI advice: AI initially suggested 16GB for the master and 6GB per worker. Sounds reasonable, right? In practice, the master sat at 10-20% RAM usage while the workers were hitting 80-90%, and I hadn't even deployed my own apps yet. Just a few open-source tools. I reshuffled to 8GB master / 10GB workers and things calmed down. I'll probably tweak it again, but that's the point. You only figure this out by actually running it.
+
+One gotcha: Proxmox couldn't see the internal IP addresses of my VMs at first. Turns out you need to install `qemu-guest-agent` inside the Ubuntu VM.
 ```bash
 sudo apt update && sudo apt install qemu-guest-agent -y
 ```
 
-### Step 3: Remote Access with Tailscale
-I chose **Tailscale** over a Cloudflare Tunnel for my management layer. It’s simpler to set up, and I can access my cluster from anywhere without worrying about port forwarding or dynamic DNS.
+### Step 3: Remote access with Tailscale
+I went with **Tailscale** over a Cloudflare Tunnel for remote access. Simpler setup, no port forwarding, no dynamic DNS.
 
-```bashbash
+```bash
 # On each VM
 curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up --authkey <YOUR_TAILSCALE_AUTH_KEY>
@@ -73,9 +80,9 @@ Go to Jarvis and check the nodes:
 kubectl get nodes
 ```
 
-### Step 5: Setting Up the Kubeconfig
+### Step 5: Kubeconfig
 
-To manage the cluster from my local machine, I copied the kubeconfig file from Jarvis:
+To manage the cluster from my laptop, I copied the kubeconfig from Jarvis:
 
 **On Jarvis**
 
@@ -96,10 +103,7 @@ Then, I edited the `~/.kube/config-homelab` file to replace `127.0.0.1` with Jar
 sed -i 's/127.0.0.1/<JARVIS_TAILSCALE_IP>/g' ~/.kube/config-homelab
 ```
 
-**The "Command Center" - (Merging Configs)**
-I didn't want to lose access to my existing Rackspace or Minikube clusters. I needed a way to switch between "Jarvis" and "Rackspace" instantly.
-
-I merged them into a single Kubeconfig using the "flatten" trick:
+I didn't want to lose access to my existing Rackspace or Minikube clusters though, so I merged everything into one kubeconfig:
 
 ```bash
 export KUBECONFIG=~/.kube/config:~/.kube/config-rackspace:~/.kube/config-homelab
@@ -107,8 +111,20 @@ kubectl config view --flatten > ~/.kube/config_merged
 mv ~/.kube/config_merged ~/.kube/config
 ```
 
-Now, I use `kubectx` to switch environments like a pro:
+Now I just use `kubectx` to switch between them:
 ```bash
 kubectx homelander     # Talking to my local homelab
 kubectx rackspace     # Now I'm talking to the Cloud
 ```
+
+---
+
+## 3. The result
+
+Here's the Proxmox dashboard after everything settled in:
+
+![Proxmox dashboard](images/proxmox-dashboard.png)
+
+And everything running on the cluster:
+
+![kubectl get pods](images/kubectl-pods.png)

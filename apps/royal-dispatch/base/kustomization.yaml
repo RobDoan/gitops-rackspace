@@ -12,10 +12,4 @@ resources:
   - admin-deployment.yaml
   - admin-service.yaml
   - ingress.yaml
-images:
-  - name: quydoan/royal-dispatch-backend
-    newTag: latest
-  - name: quydoan/royal-dispatch-frontend
-    newTag: latest
-  - name: quydoan/royal-dispatch-admin
-    newTag: latest
+  - image-automation.yaml
