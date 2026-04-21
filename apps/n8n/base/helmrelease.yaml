@@ -29,7 +29,16 @@ spec:
     extraEnv:
       WEBHOOK_URL: "https://n8n.example.com/"
       N8N_EDITOR_BASE_URL: "https://n8n.example.com/"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      THE_ROYAL_DISPATCH_API_URL: "http://backend.royal-dispatch.svc.cluster.local:8000"
     extraEnvSecrets:
       N8N_ENCRYPTION_KEY:
         name: n8n-secrets
-        key: encryption-key
+        key: N8N_ENCRYPTION_KEY
+      TELEGRAM_BOT_TOKEN:
+        name: n8n-secrets
+        key: TELEGRAM_BOT_TOKEN
+      N8N_SHARED_SECRET:
+        name: n8n-secrets
+        key: N8N_SHARED_SECRET

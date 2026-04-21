@@ -6,3 +6,4 @@ metadata:
 data:
   S3_PUBLIC_URL: "https://minio.homelander.local"
   NEXT_PUBLIC_FRONTEND_URL: "https://royal-dispatch.homelander.local"
+  BACKEND_PUBLIC_URL: "https://royal-dispatch-api.homelander.local"

@@ -10,3 +10,6 @@ spec:
     extraEnv:
       WEBHOOK_URL: "https://n8n.homelander.local/"
       N8N_EDITOR_BASE_URL: "https://n8n.homelander.local/"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      THE_ROYAL_DISPATCH_API_URL: "http://backend.royal-dispatch.svc.cluster.local:8000"
