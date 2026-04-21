@@ -14,4 +14,4 @@ spec:
         N8N_EDITOR_BASE_URL:
           value: "https://n8n.homelander.local/"
         THE_ROYAL_DISPATCH_API_URL:
-          value: "http://backend.royal-dispatch.svc.cluster.local:8000
+          value: "http://backend.royal-dispatch.svc.cluster.local:8000"
