@@ -9,6 +9,9 @@ spec:
       persistence:
         storageClass: local-path
       extraEnv:
-        WEBHOOK_URL: "https://n8n.homelander.local/"
-        N8N_EDITOR_BASE_URL: "https://n8n.homelander.local/"
-        THE_ROYAL_DISPATCH_API_URL: "http://backend.royal-dispatch.svc.cluster.local:8000"
+        WEBHOOK_URL:
+          value: "https://n8n.homelander.local/"
+        N8N_EDITOR_BASE_URL:
+          value: "https://n8n.homelander.local/"
+        THE_ROYAL_DISPATCH_API_URL:
+          value: "http://backend.royal-dispatch.svc.cluster.local:8000"
