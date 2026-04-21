@@ -5,8 +5,11 @@ metadata:
   namespace: n8n
 spec:
   values:
-    persistence:
-      storageClass: ssd
-    extraEnv:
-      WEBHOOK_URL: "https://n8n.quybits.com/"
-      N8N_EDITOR_BASE_URL: "https://n8n.quybits.com/"
+    main:
+      persistence:
+        storageClass: ssd
+      extraEnv:
+        WEBHOOK_URL:
+          value: "https://n8n.quybits.com/"
+        N8N_EDITOR_BASE_URL:
+          value: "https://n8n.quybits.com/"
