@@ -88,17 +88,33 @@ spec:
                 --from-literal=secretId="${SECRET_ID}" \
                 --dry-run=client -o yaml | kubectl apply -f -
 
-              vault kv put secret/n8n \
-                encryption_key="changeme-replace-with-32-char-key"
+              # Only seed secrets if they don't already exist
+              if ! vault kv get secret/n8n >/dev/null 2>&1; then
+                echo "Seeding secret/n8n (first run)..."
+                vault kv put secret/n8n \
+                  encryption_key="changeme-replace-with-32-char-key"
+              else
+                echo "secret/n8n already exists, skipping."
+              fi
 
-              vault kv put secret/grafana \
-                admin_password="changeme-replace-before-live" \
-                admin_user="admin"
+              if ! vault kv get secret/grafana >/dev/null 2>&1; then
+                echo "Seeding secret/grafana (first run)..."
+                vault kv put secret/grafana \
+                  admin_password="changeme-replace-before-live" \
+                  admin_user="admin"
+              else
+                echo "secret/grafana already exists, skipping."
+              fi
 
-              vault kv put secret/qdrant \
-                api_key="changeme-replace-before-live"
+              if ! vault kv get secret/qdrant >/dev/null 2>&1; then
+                echo "Seeding secret/qdrant (first run)..."
+                vault kv put secret/qdrant \
+                  api_key="changeme-replace-before-live"
+              else
+                echo "secret/qdrant already exists, skipping."
+              fi
 
-              echo "Bootstrap complete. Update secret values in Vault before going live."
+              echo "Bootstrap complete."
       volumes:
         - name: tools
           emptyDir: {}
