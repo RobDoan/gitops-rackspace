@@ -15,7 +15,13 @@
 set -euo pipefail
 
 TUNNEL_NAME="homelander"
-DNS_HOSTNAME="*.lab.quybits.com"
+DNS_HOSTNAMES=(
+  "n8n-home.quybits.com"
+  "grafana-home.quybits.com"
+  "qdrant-home.quybits.com"
+  "royal-dispatch-home.quybits.com"
+  "royal-dispatch-admin-home.quybits.com"
+)
 ZONE_NAME="quybits.com"
 EXPECTED_CONTEXT="homelander"
 VAULT_PATH="secret/cloudflared/tunnel-credentials"
@@ -87,11 +93,9 @@ if [[ ! -f "$CRED_FILE" ]]; then
   err "Credentials file $CRED_FILE not found. Re-run after deleting the tunnel via the Cloudflare dashboard, or copy the file from wherever the tunnel was originally created."
 fi
 
-# --- Step 3: Wildcard DNS CNAME via Cloudflare API (or print manual instructions) ---
+# --- Step 3: Per-host DNS CNAMEs via Cloudflare API (or print manual instructions) ---
 TARGET="${TUNNEL_UUID}.cfargotunnel.com"
 if [[ -n "${CF_API_TOKEN:-}" ]]; then
-  log "Ensuring DNS record: $DNS_HOSTNAME CNAME $TARGET (proxied)"
-
   zone_id="$(curl -fsSL -H "Authorization: Bearer $CF_API_TOKEN" \
     "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}" \
     | jq -r '.result[0].id')"
@@ -99,47 +103,54 @@ if [[ -n "${CF_API_TOKEN:-}" ]]; then
     err "Could not resolve zone ID for $ZONE_NAME. Check CF_API_TOKEN scope (Zone:Read on $ZONE_NAME)."
   fi
 
-  existing_record="$(curl -fsSL -H "Authorization: Bearer $CF_API_TOKEN" \
-    "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?type=CNAME&name=${DNS_HOSTNAME}" \
-    | jq -r '.result[0]')"
+  for hostname in "${DNS_HOSTNAMES[@]}"; do
+    log "Ensuring DNS record: $hostname CNAME $TARGET (proxied)"
 
-  if [[ "$existing_record" != "null" ]]; then
-    existing_target="$(echo "$existing_record" | jq -r '.content')"
-    record_id="$(echo "$existing_record" | jq -r '.id')"
-    if [[ "$existing_target" == "$TARGET" ]]; then
-      log "DNS record already correct — skipping"
+    list_response="$(curl -fsSL -H "Authorization: Bearer $CF_API_TOKEN" \
+      "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?type=CNAME&name=${hostname}")"
+    if [[ "$(printf '%s' "$list_response" | jq -r '.success')" != "true" ]]; then
+      err "Cloudflare API list failed for $hostname: $(printf '%s' "$list_response" | jq -r '.errors[0].message // "unknown error"')"
+    fi
+    existing_record="$(printf '%s' "$list_response" | jq -r '.result[0]')"
+
+    if [[ "$existing_record" != "null" ]]; then
+      existing_target="$(echo "$existing_record" | jq -r '.content')"
+      record_id="$(echo "$existing_record" | jq -r '.id')"
+      if [[ "$existing_target" == "$TARGET" ]]; then
+        log "  $hostname: already correct — skipping"
+      else
+        log "  $hostname: updating (was: $existing_target)"
+        response="$(curl -fsSL -X PUT \
+          -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
+          "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records/${record_id}" \
+          -d "{\"type\":\"CNAME\",\"name\":\"${hostname}\",\"content\":\"${TARGET}\",\"proxied\":true}")"
+        if [[ "$(printf '%s' "$response" | jq -r '.success')" != "true" ]]; then
+          err "Cloudflare API DNS update failed for $hostname: $(printf '%s' "$response" | jq -r '.errors[0].message // "unknown error"')"
+        fi
+      fi
     else
-      log "Updating existing DNS record (was: $existing_target)"
-      response="$(curl -fsSL -X PUT \
+      log "  $hostname: creating new record"
+      response="$(curl -fsSL -X POST \
         -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
-        "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records/${record_id}" \
-        -d "{\"type\":\"CNAME\",\"name\":\"${DNS_HOSTNAME}\",\"content\":\"${TARGET}\",\"proxied\":true}")"
+        "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records" \
+        -d "{\"type\":\"CNAME\",\"name\":\"${hostname}\",\"content\":\"${TARGET}\",\"proxied\":true}")"
       if [[ "$(printf '%s' "$response" | jq -r '.success')" != "true" ]]; then
-        err "Cloudflare API DNS update failed: $(printf '%s' "$response" | jq -r '.errors[0].message // "unknown error"')"
+        err "Cloudflare API DNS create failed for $hostname: $(printf '%s' "$response" | jq -r '.errors[0].message // "unknown error"')"
       fi
     fi
-  else
-    log "Creating new DNS record"
-    response="$(curl -fsSL -X POST \
-      -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
-      "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records" \
-      -d "{\"type\":\"CNAME\",\"name\":\"${DNS_HOSTNAME}\",\"content\":\"${TARGET}\",\"proxied\":true}")"
-    if [[ "$(printf '%s' "$response" | jq -r '.success')" != "true" ]]; then
-      err "Cloudflare API DNS create failed: $(printf '%s' "$response" | jq -r '.errors[0].message // "unknown error"')"
-    fi
-  fi
+  done
 else
   log "CF_API_TOKEN not set — skipping automated DNS"
   cat <<EOF
 
   >>> MANUAL STEP REQUIRED <<<
-  In the Cloudflare dashboard for zone $ZONE_NAME, add a DNS record:
-    Type:    CNAME
-    Name:    *.lab
-    Target:  $TARGET
-    Proxy:   Proxied (orange cloud, ON)
+  In the Cloudflare dashboard for zone $ZONE_NAME, add the following DNS records (all CNAME, all Proxied/orange-cloud ON):
 
 EOF
+  for hostname in "${DNS_HOSTNAMES[@]}"; do
+    printf "    %s  ->  %s\n" "$hostname" "$TARGET"
+  done
+  echo
 fi
 
 # --- Step 4: Store credentials.json in Vault ---

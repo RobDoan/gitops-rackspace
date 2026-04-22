@@ -19,7 +19,7 @@ spec:
                 name: qdrant
                 port:
                   number: 6333
-    - host: qdrant.lab.quybits.com
+    - host: qdrant-home.quybits.com
       http:
         paths:
           - path: /

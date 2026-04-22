@@ -19,7 +19,7 @@ spec:
                 name: n8n
                 port:
                   number: 80
-    - host: n8n.lab.quybits.com
+    - host: n8n-home.quybits.com
       http:
         paths:
           - path: /
