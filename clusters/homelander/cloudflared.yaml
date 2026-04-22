@@ -12,8 +12,6 @@ spec:
     kind: GitRepository
     name: flux-system
   dependsOn:
-    - name: namespaces
-    - name: external-secrets
     - name: eso-store
     - name: ingress-nginx
   healthChecks:
@@ -21,4 +19,3 @@ spec:
       kind: Deployment
       name: cloudflared
       namespace: cloudflared
-  timeout: 5m
