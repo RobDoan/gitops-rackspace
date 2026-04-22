@@ -7,6 +7,20 @@ FluxCD-managed Kubernetes infrastructure and applications for two clusters:
 | **rackspace** | Cloud (Rackspace) | `ssd` | `*.quybits.com` | Let's Encrypt |
 | **homelander** | Homelab (K3s) | `local-path` | `*.homelander.local` | Self-signed CA |
 
+### Homelander — Public access (via Cloudflare Tunnel)
+
+A Cloudflare Tunnel (`infrastructure/cloudflared/`) exposes homelander services on the public internet without requiring inbound ports. Routing: Cloudflare → cloudflared (in-cluster) → ingress-nginx → service.
+
+| Service | LAN | Public |
+|---|---|---|
+| n8n | https://n8n.homelander.local | https://n8n.lab.quybits.com |
+| grafana | https://grafana.homelander.local | https://grafana.lab.quybits.com |
+| qdrant | https://qdrant.homelander.local | https://qdrant.lab.quybits.com |
+| royal-dispatch | https://royal-dispatch.homelander.local | https://royal-dispatch.lab.quybits.com |
+| royal-dispatch admin | https://royal-dispatch-admin.homelander.local | https://royal-dispatch-admin.lab.quybits.com |
+
+> **Pending (known limitation):** Cloudflare's free-plan Universal SSL only covers the apex and first-level subdomains (`*.quybits.com`), not second-level wildcards (`*.lab.quybits.com`). Public HTTPS will return SSL errors until one of: (a) Cloudflare Advanced Certificate Manager is enabled (~$10/month), (b) services are renamed to first-level subdomains (e.g., `n8n-home.quybits.com`), or (c) a separate domain is used for the homelab. Bootstrap script: `scripts/cloudflared-bootstrap.sh` (run once per tunnel rotation).
+
 ## Repository Structure
 
 ```
