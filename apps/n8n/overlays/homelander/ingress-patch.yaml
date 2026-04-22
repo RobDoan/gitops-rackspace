@@ -19,3 +19,13 @@ spec:
                 name: n8n
                 port:
                   number: 80
+    - host: n8n.lab.quybits.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n
+                port:
+                  number: 80
