@@ -5,5 +5,5 @@ metadata:
   namespace: royal-dispatch
 data:
   S3_PUBLIC_URL: "https://minio.homelander.local"
-  NEXT_PUBLIC_FRONTEND_URL: "https://royal-dispatch.lab.quybits.com"
-  BACKEND_PUBLIC_URL: "https://royal-dispatch.lab.quybits.com"
+  NEXT_PUBLIC_FRONTEND_URL: "https://royal-dispatch-home.quybits.com"
+  BACKEND_PUBLIC_URL: "https://royal-dispatch-home.quybits.com"
