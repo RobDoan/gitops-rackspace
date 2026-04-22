@@ -50,6 +50,11 @@ if [[ ! -f "$VAULT_INIT_FILE" ]]; then
   err "$VAULT_INIT_FILE not found. Cannot read Vault root token."
 fi
 
+# --- Preflight: vault must be reachable and unsealed ---
+if ! kubectl -n vault exec vault-0 -- vault status >/dev/null 2>&1; then
+  err "Vault on vault-0 is sealed or unreachable. Run: ./scripts/vault-unseal.sh homelander"
+fi
+
 # --- Step 1: cloudflared tunnel login (if needed) ---
 if [[ ! -f "$HOME/.cloudflared/cert.pem" ]]; then
   log "Authenticating to Cloudflare (browser will open)"
@@ -59,8 +64,13 @@ else
 fi
 
 # --- Step 2: Create tunnel if it doesn't exist ---
-existing_uuid="$(cloudflared tunnel list --output json | jq -r --arg n "$TUNNEL_NAME" '.[] | select(.name == $n) | .id' || true)"
-if [[ -n "$existing_uuid" && "$existing_uuid" != "null" ]]; then
+tunnel_json="$(cloudflared tunnel list --output json)"
+match_count="$(printf '%s' "$tunnel_json" | jq --arg n "$TUNNEL_NAME" '[.[] | select(.name == $n)] | length')"
+if [[ "$match_count" -gt 1 ]]; then
+  err "Found $match_count tunnels named '$TUNNEL_NAME'. Delete duplicates in the Cloudflare dashboard, then retry."
+fi
+existing_uuid="$(printf '%s' "$tunnel_json" | jq -r --arg n "$TUNNEL_NAME" '.[] | select(.name == $n) | .id')"
+if [[ -n "$existing_uuid" ]]; then
   log "Tunnel '$TUNNEL_NAME' already exists (UUID: $existing_uuid)"
   TUNNEL_UUID="$existing_uuid"
 else
@@ -100,19 +110,23 @@ if [[ -n "${CF_API_TOKEN:-}" ]]; then
       log "DNS record already correct — skipping"
     else
       log "Updating existing DNS record (was: $existing_target)"
-      curl -fsSL -X PUT \
+      response="$(curl -fsSL -X PUT \
         -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
         "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records/${record_id}" \
-        -d "{\"type\":\"CNAME\",\"name\":\"${DNS_HOSTNAME}\",\"content\":\"${TARGET}\",\"proxied\":true}" \
-        > /dev/null
+        -d "{\"type\":\"CNAME\",\"name\":\"${DNS_HOSTNAME}\",\"content\":\"${TARGET}\",\"proxied\":true}")"
+      if [[ "$(printf '%s' "$response" | jq -r '.success')" != "true" ]]; then
+        err "Cloudflare API DNS update failed: $(printf '%s' "$response" | jq -r '.errors[0].message // "unknown error"')"
+      fi
     fi
   else
     log "Creating new DNS record"
-    curl -fsSL -X POST \
+    response="$(curl -fsSL -X POST \
       -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
       "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records" \
-      -d "{\"type\":\"CNAME\",\"name\":\"${DNS_HOSTNAME}\",\"content\":\"${TARGET}\",\"proxied\":true}" \
-      > /dev/null
+      -d "{\"type\":\"CNAME\",\"name\":\"${DNS_HOSTNAME}\",\"content\":\"${TARGET}\",\"proxied\":true}")"
+    if [[ "$(printf '%s' "$response" | jq -r '.success')" != "true" ]]; then
+      err "Cloudflare API DNS create failed: $(printf '%s' "$response" | jq -r '.errors[0].message // "unknown error"')"
+    fi
   fi
 else
   log "CF_API_TOKEN not set — skipping automated DNS"
@@ -139,9 +153,14 @@ fi
 # Workaround: copy the file into the pod, write from there, then delete.
 TMP_NAME="cloudflared-creds-$(date +%s).json"
 kubectl -n vault cp "$CRED_FILE" "vault-0:/tmp/${TMP_NAME}"
-kubectl -n vault exec vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
-  vault kv put "$VAULT_PATH" "credentials.json=@/tmp/${TMP_NAME}" >/dev/null
+trap 'kubectl -n vault exec vault-0 -- rm -f "/tmp/'"${TMP_NAME}"'" >/dev/null 2>&1 || true' EXIT
+
+kubectl -n vault exec -i vault-0 -- sh -c \
+  'VAULT_TOKEN="$1" vault kv put "$2" "credentials.json=@$3" >/dev/null' \
+  -- "$ROOT_TOKEN" "$VAULT_PATH" "/tmp/${TMP_NAME}"
+
 kubectl -n vault exec vault-0 -- rm "/tmp/${TMP_NAME}"
+trap - EXIT
 
 # --- Step 5: Print the UUID for the user ---
 cat <<EOF
