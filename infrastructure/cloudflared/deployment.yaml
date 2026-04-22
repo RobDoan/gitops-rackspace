@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: cloudflared
   namespace: cloudflared
+  labels:
+    app: cloudflared
 spec:
   replicas: 2
   strategy:
@@ -18,6 +20,7 @@ spec:
       labels:
         app: cloudflared
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:2026.3.0
@@ -25,8 +28,6 @@ spec:
             - tunnel
             - --config
             - /etc/cloudflared/config/config.yaml
-            - --metrics
-            - 0.0.0.0:2000
             - run
           ports:
             - name: metrics
@@ -42,6 +43,7 @@ spec:
             httpGet:
               path: /ready
               port: 2000
+            initialDelaySeconds: 5
             periodSeconds: 5
           resources:
             requests:
