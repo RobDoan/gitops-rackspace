@@ -19,7 +19,7 @@ spec:
                 name: frontend
                 port:
                   number: 3000
-    - host: royal-dispatch.lab.quybits.com
+    - host: royal-dispatch-home.quybits.com
       http:
         paths:
           - path: /
@@ -51,7 +51,7 @@ spec:
                 name: backend
                 port:
                   number: 8000
-    - host: royal-dispatch.lab.quybits.com
+    - host: royal-dispatch-home.quybits.com
       http:
         paths:
           - path: /api/(.*)
@@ -83,7 +83,7 @@ spec:
                 name: admin
                 port:
                   number: 3001
-    - host: royal-dispatch-admin.lab.quybits.com
+    - host: royal-dispatch-admin-home.quybits.com
       http:
         paths:
           - path: /
@@ -115,7 +115,7 @@ spec:
                 name: backend
                 port:
                   number: 8000
-    - host: royal-dispatch-admin.lab.quybits.com
+    - host: royal-dispatch-admin-home.quybits.com
       http:
         paths:
           - path: /api/(.*)

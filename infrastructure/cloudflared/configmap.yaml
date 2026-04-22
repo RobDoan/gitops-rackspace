@@ -11,7 +11,31 @@ data:
     no-autoupdate: true
 
     ingress:
-      - hostname: "*.lab.quybits.com"
+      - hostname: "n8n-home.quybits.com"
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        originRequest:
+          httpHostHeader: ""
+          connectTimeout: 30s
+          noHappyEyeballs: true
+      - hostname: "grafana-home.quybits.com"
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        originRequest:
+          httpHostHeader: ""
+          connectTimeout: 30s
+          noHappyEyeballs: true
+      - hostname: "qdrant-home.quybits.com"
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        originRequest:
+          httpHostHeader: ""
+          connectTimeout: 30s
+          noHappyEyeballs: true
+      - hostname: "royal-dispatch-home.quybits.com"
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        originRequest:
+          httpHostHeader: ""
+          connectTimeout: 30s
+          noHappyEyeballs: true
+      - hostname: "royal-dispatch-admin-home.quybits.com"
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
         originRequest:
           httpHostHeader: ""
