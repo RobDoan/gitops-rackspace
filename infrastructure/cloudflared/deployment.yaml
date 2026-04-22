@@ -5,6 +5,8 @@ metadata:
   namespace: cloudflared
   labels:
     app: cloudflared
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   replicas: 2
   strategy:

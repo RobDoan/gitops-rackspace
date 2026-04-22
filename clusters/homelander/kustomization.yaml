@@ -16,3 +16,4 @@ resources:
   - minio.yaml
   - royal-dispatch.yaml
   - cloudflared.yaml
+  - reloader.yaml
