@@ -19,3 +19,13 @@ spec:
                 name: qdrant
                 port:
                   number: 6333
+    - host: qdrant.lab.quybits.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: qdrant
+                port:
+                  number: 6333
