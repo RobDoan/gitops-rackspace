@@ -9,4 +9,4 @@ spec:
       storageClassName: local-path
     grafana.ini:
       server:
-        root_url: "https://grafana.homelander.local"
+        root_url: "%(protocol)s://%(domain)s:%(http_port)s/"
