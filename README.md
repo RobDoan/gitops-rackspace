@@ -13,13 +13,13 @@ A Cloudflare Tunnel (`infrastructure/cloudflared/`) exposes homelander services 
 
 | Service | LAN | Public |
 |---|---|---|
-| n8n | https://n8n.homelander.local | https://n8n.lab.quybits.com |
-| grafana | https://grafana.homelander.local | https://grafana.lab.quybits.com |
-| qdrant | https://qdrant.homelander.local | https://qdrant.lab.quybits.com |
-| royal-dispatch | https://royal-dispatch.homelander.local | https://royal-dispatch.lab.quybits.com |
-| royal-dispatch admin | https://royal-dispatch-admin.homelander.local | https://royal-dispatch-admin.lab.quybits.com |
+| n8n | https://n8n.homelander.local | https://n8n-home.quybits.com |
+| grafana | https://grafana.homelander.local | https://grafana-home.quybits.com |
+| qdrant | https://qdrant.homelander.local | https://qdrant-home.quybits.com |
+| royal-dispatch | https://royal-dispatch.homelander.local | https://royal-dispatch-home.quybits.com |
+| royal-dispatch admin | https://royal-dispatch-admin.homelander.local | https://royal-dispatch-admin-home.quybits.com |
 
-> **Pending (known limitation):** Cloudflare's free-plan Universal SSL only covers the apex and first-level subdomains (`*.quybits.com`), not second-level wildcards (`*.lab.quybits.com`). Public HTTPS will return SSL errors until one of: (a) Cloudflare Advanced Certificate Manager is enabled (~$10/month), (b) services are renamed to first-level subdomains (e.g., `n8n-home.quybits.com`), or (c) a separate domain is used for the homelab. Bootstrap script: `scripts/cloudflared-bootstrap.sh` (run once per tunnel rotation).
+> Hostnames are first-level under `quybits.com` so Cloudflare's free Universal SSL covers them. Bootstrap script: `scripts/cloudflared-bootstrap.sh` (idempotent, re-run for tunnel rotations or to add new hosts).
 
 ## Repository Structure
 
