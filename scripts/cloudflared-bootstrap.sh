@@ -106,9 +106,12 @@ if [[ -n "${CF_API_TOKEN:-}" ]]; then
   for hostname in "${DNS_HOSTNAMES[@]}"; do
     log "Ensuring DNS record: $hostname CNAME $TARGET (proxied)"
 
-    existing_record="$(curl -fsSL -H "Authorization: Bearer $CF_API_TOKEN" \
-      "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?type=CNAME&name=${hostname}" \
-      | jq -r '.result[0]')"
+    list_response="$(curl -fsSL -H "Authorization: Bearer $CF_API_TOKEN" \
+      "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?type=CNAME&name=${hostname}")"
+    if [[ "$(printf '%s' "$list_response" | jq -r '.success')" != "true" ]]; then
+      err "Cloudflare API list failed for $hostname: $(printf '%s' "$list_response" | jq -r '.errors[0].message // "unknown error"')"
+    fi
+    existing_record="$(printf '%s' "$list_response" | jq -r '.result[0]')"
 
     if [[ "$existing_record" != "null" ]]; then
       existing_target="$(echo "$existing_record" | jq -r '.content')"
