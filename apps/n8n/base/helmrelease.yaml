@@ -29,6 +29,8 @@ spec:
         database:
           type: sqlite
       extraEnv:
+        N8N_METRICS:
+          value: "true"
         WEBHOOK_URL:
           value: "https://n8n.example.com/"
         N8N_EDITOR_BASE_URL:
