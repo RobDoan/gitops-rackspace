@@ -5,3 +5,4 @@ resources:
   - servicemonitors/n8n.yaml
   - servicemonitors/minio.yaml
   - servicemonitors/qdrant.yaml
+  - servicemonitors/royal-dispatch-backend.yaml
