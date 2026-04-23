@@ -17,3 +17,4 @@ resources:
   - royal-dispatch.yaml
   - cloudflared.yaml
   - reloader.yaml
+  - kube-prometheus-stack.yaml
