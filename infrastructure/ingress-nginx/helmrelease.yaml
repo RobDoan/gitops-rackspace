@@ -30,9 +30,8 @@ spec:
         serviceMonitor:
           enabled: true
           namespace: monitoring
+          # Required: kube-prometheus-stack's Prometheus serviceMonitorSelector
+          # matches on release=kube-prometheus-stack, so ServiceMonitors without
+          # this label are ignored by the Operator.
           additionalLabels:
             release: kube-prometheus-stack
-        service:
-          annotations:
-            prometheus.io/scrape: "true"
-            prometheus.io/port: "10254"
