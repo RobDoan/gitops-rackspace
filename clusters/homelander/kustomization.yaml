@@ -19,3 +19,4 @@ resources:
   - reloader.yaml
   - kube-prometheus-stack.yaml
   - kube-prometheus-stack-config.yaml
+  - prometheus-postgres-exporter.yaml
