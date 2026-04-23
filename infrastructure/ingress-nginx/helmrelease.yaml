@@ -25,3 +25,13 @@ spec:
         default: true
       config:
         use-forwarded-headers: "true"
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+          namespace: monitoring
+          # Required: kube-prometheus-stack's Prometheus serviceMonitorSelector
+          # matches on release=kube-prometheus-stack, so ServiceMonitors without
+          # this label are ignored by the Operator.
+          additionalLabels:
+            release: kube-prometheus-stack
