@@ -18,3 +18,4 @@ resources:
   - cloudflared.yaml
   - reloader.yaml
   - kube-prometheus-stack.yaml
+  - kube-prometheus-stack-config.yaml
