@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: admin
-          image: quydoan/royal-dispatch-admin:a3656c6-1776775234 # {"$imagepolicy": "flux-system:royal-dispatch-admin"}
+          image: quydoan/royal-dispatch-admin:ae5f21f-1776975396 # {"$imagepolicy": "flux-system:royal-dispatch-admin"}
           ports:
             - containerPort: 3001
           env:
