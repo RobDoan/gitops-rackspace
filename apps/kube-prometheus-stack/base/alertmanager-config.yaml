@@ -22,7 +22,7 @@ spec:
       slackConfigs:
         - apiURL:
             name: alertmanager-slack
-            key: webhook-url
+            key: default
           channel: "#alerts"
           sendResolved: true
           title: "{{ .CommonLabels.alertname }} — {{ .CommonLabels.severity }}"
@@ -34,7 +34,7 @@ spec:
       slackConfigs:
         - apiURL:
             name: alertmanager-slack
-            key: webhook-url
+            key: critical
           channel: "#alerts-critical"
           sendResolved: true
           title: "[CRITICAL] {{ .CommonLabels.alertname }}"
