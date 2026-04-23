@@ -21,7 +21,7 @@ spec:
     config:
       datasource:
         host: postgres-postgresql.postgres.svc.cluster.local
-        port: 5432
+        port: "5432"
         user: postgres_exporter
         passwordSecret:
           name: postgres-exporter
