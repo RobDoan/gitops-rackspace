@@ -11,6 +11,12 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: qdrant
+    # Exclude the headless Service used for StatefulSet cluster discovery — it
+    # proxies to the same pod as the main Service, so matching both would
+    # double every series.
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: DoesNotExist
   endpoints:
     - port: http
       path: /metrics
