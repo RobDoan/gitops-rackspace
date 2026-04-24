@@ -56,6 +56,9 @@ spec:
         retention_period: 720h
       compactor:
         retention_enabled: true
+        # Required when retention_enabled is true: tells the compactor where
+        # to store the delete-request log. Must match the schema's object_store.
+        delete_request_store: s3
     singleBinary:
       replicas: 1
       persistence:
