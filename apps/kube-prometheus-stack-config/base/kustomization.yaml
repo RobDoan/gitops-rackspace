@@ -6,3 +6,6 @@ resources:
   - servicemonitors/minio.yaml
   - servicemonitors/qdrant.yaml
   - servicemonitors/royal-dispatch-backend.yaml
+  - prometheusrules/infra.yaml
+  - prometheusrules/ingress.yaml
+  - prometheusrules/app.yaml
