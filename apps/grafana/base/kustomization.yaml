@@ -5,7 +5,9 @@ resources:
   - externalsecret.yaml
   - helmrelease.yaml
   - ingress.yaml
-namespace: grafana
+# Intentionally no top-level `namespace:` override — helmrepository.yaml
+# lives in flux-system by design, and a kustomize namespace would rewrite
+# it to `grafana`, breaking the HelmRelease sourceRef.
 configMapGenerator:
   - name: grafana-royal-dispatch-dashboard
     files:
