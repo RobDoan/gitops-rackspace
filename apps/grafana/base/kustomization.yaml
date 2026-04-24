@@ -5,3 +5,13 @@ resources:
   - externalsecret.yaml
   - helmrelease.yaml
   - ingress.yaml
+namespace: grafana
+configMapGenerator:
+  - name: grafana-royal-dispatch-dashboard
+    files:
+      - royal-dispatch.json=dashboards/royal-dispatch.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+generatorOptions:
+  disableNameSuffixHash: true
