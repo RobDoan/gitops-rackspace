@@ -21,3 +21,4 @@ resources:
   - kube-prometheus-stack-config.yaml
   - prometheus-postgres-exporter.yaml
   - loki.yaml
+  - personal-site.yaml
