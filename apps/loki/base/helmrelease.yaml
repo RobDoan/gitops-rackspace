@@ -88,13 +88,15 @@ spec:
       enabled: false
     gateway:
       enabled: false
+    # Chart 6.x moved lokiCanary to top-level; the monitoring.lokiCanary path
+    # is a no-op in this chart version. Keep selfMonitoring under monitoring.
+    lokiCanary:
+      enabled: false
     monitoring:
       selfMonitoring:
         enabled: false
         grafanaAgent:
           installOperator: false
-      lokiCanary:
-        enabled: false
     test:
       enabled: false
     serviceMonitor:
