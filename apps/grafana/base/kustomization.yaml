@@ -10,6 +10,7 @@ resources:
 # it to `grafana`, breaking the HelmRelease sourceRef.
 configMapGenerator:
   - name: grafana-royal-dispatch-dashboard
+    namespace: grafana   # set per-generator so helmrepository.yaml stays in flux-system
     files:
       - royal-dispatch.json=dashboards/royal-dispatch.json
     options:
