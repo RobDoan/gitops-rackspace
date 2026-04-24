@@ -21,6 +21,7 @@ DNS_HOSTNAMES=(
   "qdrant-home.quybits.com"
   "royal-dispatch-home.quybits.com"
   "royal-dispatch-admin-home.quybits.com"
+  "hi.quybits.com"
 )
 ZONE_NAME="quybits.com"
 EXPECTED_CONTEXT="homelander"
