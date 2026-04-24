@@ -75,10 +75,17 @@ spec:
           // client-go's default 5 QPS rate limit — most containers on a busy
           // node get stuck in "Waited before sending request" and never stream.
           // loki.source.file reads from the /var/log/pods/... hostPath mount
-          // and avoids the throttler entirely. __path__ was already set by the
-          // discovery.relabel above.
+          // and avoids the throttler entirely.
+
+          // loki.source.file does NOT expand globs; it tails exact paths.
+          // local.file_match expands __path__ (/var/log/pods/.../<container>/*.log)
+          // into the actual rotated log files (0.log, 1.log, etc.) that kubelet
+          // writes per container restart.
+          local.file_match "pod_logs" {
+            path_targets = discovery.relabel.pod_logs.output
+          }
           loki.source.file "pod_logs" {
-            targets    = discovery.relabel.pod_logs.output
+            targets    = local.file_match.pod_logs.targets
             forward_to = [loki.write.default.receiver]
           }
           loki.write "default" {
