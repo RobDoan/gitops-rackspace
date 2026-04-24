@@ -22,3 +22,4 @@ resources:
   - prometheus-postgres-exporter.yaml
   - loki.yaml
   - personal-site.yaml
+  - alloy.yaml
