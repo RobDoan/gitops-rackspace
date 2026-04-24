@@ -68,6 +68,15 @@ spec:
           memory: 256Mi
         limits:
           memory: 512Mi
+    # SingleBinary mode — zero out the SimpleScalable components, otherwise the
+    # chart's validate.yaml rejects the install with "more than zero replicas
+    # configured for both the single binary and simple scalable targets".
+    read:
+      replicas: 0
+    write:
+      replicas: 0
+    backend:
+      replicas: 0
     minio:
       enabled: false
     chunksCache:
