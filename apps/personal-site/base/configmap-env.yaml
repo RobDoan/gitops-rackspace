@@ -12,4 +12,4 @@ data:
   QDRANT_URL: http://qdrant.qdrant.svc.cluster.local:6333
   QDRANT_COLLECTION: personal-site
   # Public Turnstile site key — safe in git. Replace with real key before deploy.
-  TURNSTILE_SITE_KEY: "1x00000000000000000000AA"
+  TURNSTILE_SITE_KEY: "0x4AAAAAADCRwNEy60IsUood"

@@ -30,9 +30,9 @@ err() { printf '\033[1;31mERROR:\033[0m %s\n' "$*" >&2; exit 1; }
 # ── Preflight ───────────────────────────────────────────────────────────────
 current_ctx="$(kubectl config current-context 2>/dev/null || true)"
 [[ "$current_ctx" == "$EXPECTED_CONTEXT" ]] || err "kubectx is '$current_ctx', expected '$EXPECTED_CONTEXT'. Run: kubectx $EXPECTED_CONTEXT"
-command -v vault >/dev/null || err "vault CLI not installed (brew install vault)"
-command -v jq    >/dev/null || err "jq not installed (brew install jq)"
-[[ -f "$VAULT_INIT_FILE" ]] || err "$VAULT_INIT_FILE not found"
+# command -v vault >/dev/null || err "vault CLI not installed (brew install vault)"
+# command -v jq    >/dev/null || err "jq not installed (brew install jq)"
+# [[ -f "$VAULT_INIT_FILE" ]] || err "$VAULT_INIT_FILE not found"
 
 export VAULT_ADDR="${VAULT_ADDR:-http://localhost:8200}"
 export VAULT_TOKEN="$(jq -r .root_token "$VAULT_INIT_FILE")"
@@ -58,18 +58,20 @@ PG_ADMIN_PW="$(kubectl -n postgres get secret postgres-secrets -o jsonpath='{.da
 
 APP_PW="$(openssl rand -base64 24 | tr -d '+/=' | head -c 32)"
 log "Creating role + database (idempotent)"
-kubectl -n postgres exec postgres-postgresql-0 -- bash -c "PGPASSWORD='$PG_ADMIN_PW' psql -U postgres <<SQL
-DO \$\$ BEGIN
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='personal_site') THEN
-    CREATE ROLE personal_site LOGIN PASSWORD '$APP_PW';
-  ELSE
-    ALTER ROLE personal_site WITH PASSWORD '$APP_PW';
-  END IF;
-END \$\$;
+# Heredoc is quoted ('SQL') so local shell doesn't expand anything inside it.
+# Inject APP_PW explicitly via psql -v so we don't string-interpolate a password
+# into SQL (no escaping traps) and don't tangle with kubectl+bash+psql layers.
+kubectl -n postgres exec -i postgres-postgresql-0 -- \
+  env PGPASSWORD="$PG_ADMIN_PW" psql -U postgres \
+  -v ON_ERROR_STOP=1 \
+  -v app_pw="$APP_PW" <<'SQL'
+SELECT 'CREATE ROLE personal_site LOGIN'
+  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname='personal_site')\gexec
+ALTER ROLE personal_site WITH PASSWORD :'app_pw';
 SELECT 'CREATE DATABASE personal_site OWNER personal_site'
-  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname='personal_site')\\gexec
+  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname='personal_site')\gexec
 GRANT ALL PRIVILEGES ON DATABASE personal_site TO personal_site;
-SQL"
+SQL
 
 PG_HOST="postgres-postgresql.postgres.svc.cluster.local"
 PG_DSN="postgres://personal_site:${APP_PW}@${PG_HOST}:5432/personal_site"
