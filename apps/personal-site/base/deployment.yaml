@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: web
-          image: quydoan/personal-site:b16dd45-1777011602 # {"$imagepolicy": "flux-system:personal-site"}
+          image: quydoan/personal-site:62bf0ce-1777036359 # {"$imagepolicy": "flux-system:personal-site"}
           ports:
             - containerPort: 3000
           envFrom:
