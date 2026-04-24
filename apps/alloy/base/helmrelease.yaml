@@ -60,7 +60,14 @@ spec:
               target_label  = "__path__"
             }
           }
-          loki.source.kubernetes "pod_logs" {
+          // Tail pod log FILES directly, not via the Kubernetes API. The API
+          // path (loki.source.kubernetes) opens a watch per container and hits
+          // client-go's default 5 QPS rate limit — most containers on a busy
+          // node get stuck in "Waited before sending request" and never stream.
+          // loki.source.file reads from the /var/log/pods/... hostPath mount
+          // and avoids the throttler entirely. __path__ was already set by the
+          // discovery.relabel above.
+          loki.source.file "pod_logs" {
             targets    = discovery.relabel.pod_logs.output
             forward_to = [loki.write.default.receiver]
           }
