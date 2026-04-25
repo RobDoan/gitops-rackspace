@@ -24,7 +24,7 @@ spec:
               mountPath: /init
       containers:
         - name: ingest
-          image: quydoan/personal-site:5124363-1777129535 # {"$imagepolicy": "flux-system:personal-site"}
+          image: quydoan/personal-site:fc8623e-1777133059 # {"$imagepolicy": "flux-system:personal-site"}
           workingDir: /app
           command: ["node", "/app/dist/ingest.js", "/app/content"]
           envFrom:
