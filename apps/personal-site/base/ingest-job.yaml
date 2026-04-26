@@ -3,6 +3,11 @@ kind: Job
 metadata:
   name: content-ingest
   namespace: personal-site
+  annotations:
+    # Jobs have immutable spec.template, so a new image tag can't be applied
+    # in place. This tells Flux's kustomize-controller to delete and recreate
+    # the Job whenever an immutable field changes. See docs/blog/flux-and-immutable-jobs.md.
+    kustomize.toolkit.fluxcd.io/force: "Enabled"
 spec:
   backoffLimit: 2
   ttlSecondsAfterFinished: 3600
