@@ -29,6 +29,12 @@ data:
           httpHostHeader: ""
           connectTimeout: 30s
           noHappyEyeballs: true
+      - hostname: "minio-home.quybits.com"
+        service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+        originRequest:
+          httpHostHeader: ""
+          connectTimeout: 30s
+          noHappyEyeballs: true
       - hostname: "royal-dispatch-home.quybits.com"
         service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
         originRequest:

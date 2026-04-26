@@ -19,6 +19,7 @@ DNS_HOSTNAMES=(
   "n8n-home.quybits.com"
   "grafana-home.quybits.com"
   "qdrant-home.quybits.com"
+  "minio-home.quybits.com"
   "royal-dispatch-home.quybits.com"
   "royal-dispatch-admin-home.quybits.com"
   "hi.quybits.com"

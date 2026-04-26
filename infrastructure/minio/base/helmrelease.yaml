@@ -23,7 +23,7 @@ spec:
     existingSecret: minio-secrets
     buckets:
       - name: royal-audio
-        policy: none
+        policy: download
     persistence:
       enabled: true
       size: 20Gi

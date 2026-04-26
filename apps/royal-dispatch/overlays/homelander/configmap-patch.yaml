@@ -4,7 +4,7 @@ metadata:
   name: royal-dispatch-config
   namespace: royal-dispatch
 data:
-  S3_PUBLIC_URL: "https://minio-hom.quybits.com"
+  S3_PUBLIC_URL: "https://minio-home.quybits.com"
   S3_ENDPOINT_URL: "http://minio.minio.svc.cluster.local:9000"
   S3_BUCKET: "royal-audio"
   QDRANT_URL: "http://qdrant.qdrant.svc.cluster.local:6333"
